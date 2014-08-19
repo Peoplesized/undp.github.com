@@ -134,7 +134,7 @@ routers.Global = Backbone.Router.extend({
         } else {
             // if projects are already present
             that.projects.cb = updateDescription;
-            that.projects.reset(this.allProjects.filter(customFilter));
+            that.projects.reset(that.allProjects.filter(customFilter));
         }
 
         // Check for funding countries to show donor visualization
