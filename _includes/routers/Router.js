@@ -67,7 +67,7 @@ routers.Global = Backbone.Router.extend({
 
         // custom filter function
         // TODO clarify
-        var filter = function (model) {
+        var customFilter = function (model) {
             if (!that.processedFacets.length) return true;
             return _(that.processedFacets).reduce(function (memo, filter) {
                 if (filter.collection === 'region') {
@@ -91,14 +91,14 @@ routers.Global = Backbone.Router.extend({
         } else {
             that.app = that.app || new views.App({
                 el: '#embed',
-                embed: embed,
-                year: year
+                year: year,
+                embed: embed
             });
         }
 
-        var loadFilters = function(){
-
-            var loadFacetsAndFilters = new views.Facets();
+        // mainInterface: facets, filters, map and widget
+        var mainInterface = function(){
+            new views.Facets();
 
             // Create summary map view
             if (!embed){
@@ -119,42 +119,22 @@ routers.Global = Backbone.Router.extend({
 
         };
 
-
-
-        // Load projects
-        if (!that.allProjects || that.fiscalYear != year) {
-            if (that.fiscalYear && that.fiscalYear != year){that.projects.map.map.remove();}
+        if (that.fiscalYear != year){
+            // if (that.fiscalYear && that.fiscalYear != year){that.projects.map.map.remove();}
             that.fiscalYear = year;
-            that.allProjects = new Projects(SUMMARY);
 
-            that.projects = new Projects(that.allProjects.filter(filter));
+            that.projects = new Projects(that.allProjects.filter(customFilter));
             that.projects.view = new views.Projects({ collection: that.projects });
-            that.projects.cb = _(loadFilters).bind(that);
 
+            // TODO what is this?
+            that.projects.cb = _(mainInterface).bind(that);
             that.projects.watch();
 
             that.app.updateYear(year);
-
         } else {
             // if projects are already present
             that.projects.cb = updateDescription;
-            that.projects.reset(this.allProjects.filter(filter));
-        }
-
-        // change summary look when on individual country
-
-        $('.map-filter').removeClass('active') // reset the subfilter look
-        $('#map-filters').find('#loc-all').addClass('active');
-
-        if(unit){
-            $('#map-filters').removeClass('disabled');//shows type sub-filter
-            $('.map-btn').removeClass('active');
-            $('ul.layers li').addClass('no-hover');
-            $('ul.layers li.hdi .graph').addClass('active');
-        } else {
-            $('#map-filters').addClass('disabled'); //hides type sub-filter
-            $('ul.layers li').removeClass('no-hover');
-            $('ul.layers li.hdi .graph').removeClass('active');
+            that.projects.reset(this.allProjects.filter(customFilter));
         }
 
         // Check for funding countries to show donor visualization

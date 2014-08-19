@@ -15,11 +15,11 @@ views.Facets = Backbone.View.extend({
 		this.collection.each(function(facet){
 			facetHTML += that.template(facet);
 
-			facet.subCollection.fetch({
+			facet.subFilters.fetch({
 				success: function (data) {
 					global.app.views[facet.id] = new views.Filters({
 					el: '#' + facet.id,
-					collection: facet.subCollection
+					collection: facet.subFilters
 				});
 
 				_.each(global.processedFacets, function (obj) {
@@ -27,7 +27,7 @@ views.Facets = Backbone.View.extend({
 				 		global.app.views[facet.id].active = true;
 					}
 				});
-				facet.subCollection.watch();
+				facet.subFilters.watch();
 
 				// that.counter++;
 				// if (that.counter === facets.length) updateDescription();
