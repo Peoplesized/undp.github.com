@@ -78,13 +78,13 @@ Facet = Backbone.Model.extend({
     },
     initialize: function(){
         var that = this;
-        // create the filters under each Facet model
-        this.subCollection = new Filters();
+        // start the filters under each Facet model
+        this.subFilters = new Filters();
 
         // the subCollection (aka Filters) inherit the facets fields
-        this.subCollection.id = this.get('id');
-        this.subCollection.name = this.get('name');
-        this.subCollection.url = this.get('url');
+        this.subFilters.id = this.get('id');
+        this.subFilters.name = this.get('name');
+        this.subFilters.url = this.get('url');
     }
 });
 

@@ -12,9 +12,6 @@ routers.Global = Backbone.Router.extend({
         'top-donors/*category': 'topDonors' //cat --> "regular"
     },
 
-    // This is triggered when the user types in the root url ('http://open.undp.org')
-    // the site redirects to /#year
-    // which then triggers 'fiscalyear'
     redirect: function() {
         this.navigate(CURRENT_YR, {trigger: true});
     },
