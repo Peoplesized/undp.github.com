@@ -145,6 +145,9 @@ views.Filters = Backbone.View.extend({
                     view.$el.empty();
                 }
 
+                ///////// TODO -redundant //////////
+                var facets = new Facets().toJSON();
+                ////////////////////////////////////
                 if (global.filtercounter !== facets.length ) {
                     global.filtercounter = (global.filtercounter) ? global.filtercounter + 1 : 2;
                 } else {

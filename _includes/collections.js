@@ -124,35 +124,36 @@ Projects = Backbone.Collection.extend({
         this.on('reset', this.update, this);
     },
     update: function() {
+        var facets = new Facets().toJSON();
         var that = this,
             processes = 5 + facets.length,
             status = 0;
 
         if (!this.length) return false;
 
-
         // calculates the sum of the particular field
         function calc(collection,facet,category) {
-            collection[facet + category.capitalize()] = _.reduce(collection.models, function(res,obj) {
-                if (_.isArray(obj.attributes[facet])) {
-                    _.each(obj.attributes[facet], function(o) {
-                        if (!(o in res)) {
-                            res[o] = obj.attributes[category];
+
+            collection[facet + category.capitalize()] = _.reduce(collection.models, function(memo,model) {
+                if (_.isArray(model.get(facet))) {
+                    _.each(model.get(facet), function(o) {
+                        if (!(o in memo)) {
+                            memo[o] = model.get(category);
                         } else {
-                            res[o] += obj.attributes[category];
+                            memo[o] += model.get(category);
                         }
                     });
                 } else {
-                    if (!(obj.attributes[facet] in res)) {
-                        res[obj.attributes[facet]] = obj.attributes[category];
+
+                    if (!(model.get(facet) in memo)) {
+                        memo[model.get(facet)] = model.get(category);
                     } else {
-                        res[obj.attributes[facet]] += obj.attributes[category];
+                        memo[model.get(facet)] += model.get(category);
                     }
                 }
-                return res;
+                return memo;
             }, {});
         }
-
 
         // Count projects for each facet
         _(facets).each(function(facet) {
@@ -186,6 +187,7 @@ Projects = Backbone.Collection.extend({
                     }
                 }
 
+                // calculate the budget and expenditure for respective facet
                 setTimeout(function() {
                     calc(that,facet.id,'budget');
                     if (subStatus === subProcesses) {
