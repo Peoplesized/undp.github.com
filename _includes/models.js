@@ -16,23 +16,23 @@ National = Backbone.Model.extend({
     }
 });
 
-Subnational = Backbone.Model.extend({
+Subnational = Backbone.Model.extend({ // the model is a country with subcollection
     defaults: {visible:false},
-    initialize:function(){ // can this happen on a collection level?
-        model = this;
-        sub = model.get('subnational');
-        if (sub.length === 0 ) {
-            model.geojson = null;
-        } else {
-            geojson = [];
-            _(sub).each(function(data){
+    initialize:function(){
+        var that = this,
+            subnational = this.get('subnational');
+
+        subnational.length === 0 ? this.geojson = null : this.geojson = [];
+
+        if (subnational.length > 0 ) {
+            _(subnational).each(function(data){
                 
                 var feature = {
                     "type":"Feature",
                     "properties":{
-                        project:model.get('id'),
+                        project:that.get('id'),
                         output_id: data.outputID,
-                        title:model.get('title'),
+                        title:that.get('title'),
                         precision: data.precision,
                         scope: data.scope,
                         focus_area: data.focus_area,
@@ -45,9 +45,8 @@ Subnational = Backbone.Model.extend({
                         "coordinates": [parseFloat(data.lon),parseFloat(data.lat)]
                         }
                     };
-                geojson.push(feature);   
+                that.geojson.push(feature);
             })
-            model.geojson = geojson;
         }
     }
 });
