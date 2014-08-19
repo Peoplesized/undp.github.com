@@ -141,6 +141,7 @@ $(document).ready(function() {
         }, {}),
         app = {},
         // TODO in the process of moving this to the Facets collection
+        // both Filters and Projects use this varible
         facets = [
             {
                 id: 'operating_unit',

@@ -44,6 +44,25 @@ views.App = Backbone.View.extend({
             // }
         }
 
+
+        // display map Filter
+
+        $('.map-filter').removeClass('active') // reset the subfilter look
+        $('#map-filters').find('#loc-all').addClass('active');
+
+        // if(unit){
+            $('#map-filters').removeClass('disabled');//shows type sub-filter
+            $('.map-btn').removeClass('active');
+            $('ul.layers li').addClass('no-hover');
+            $('ul.layers li.hdi .graph').addClass('active');
+        // } else {
+        //     $('#map-filters').addClass('disabled'); //hides type sub-filter
+        //     $('ul.layers li').removeClass('no-hover');
+        //     $('ul.layers li.hdi .graph').removeClass('active');
+        // }
+
+
+
         // adding years in render since the year div is part of app template
         this.years = new views.YearNav();
 
