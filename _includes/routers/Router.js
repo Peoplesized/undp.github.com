@@ -24,8 +24,15 @@ routers.Global = Backbone.Router.extend({
         var that = this;
 
         if (year === CURRENT_YR){
-            util.loadjsFile('api/project_summary_' + year + '.js', year, function() {
-                that.browser(year, path, embed);
+
+            this.allProjects = new Projects();
+            this.allProjects.url = 'api/project_summary_' + year + '.json';
+
+            // can we use listenTo instead?
+            this.allProjects.fetch({
+                success:function(){
+                    that.browser(year, path, embed);
+                }
             });
         } else {
             that.project(year, false,false); // in this case year is the project id
@@ -34,8 +41,6 @@ routers.Global = Backbone.Router.extend({
     },
     selectedFacets: false,
     processedFacets: false,
-    unit: false,
-    donor: false,
     browser: function (year, path, embed) {
         var that = this,
             unit = false, // this should be reused throughout the site
