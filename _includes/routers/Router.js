@@ -52,16 +52,16 @@ routers.Global = Backbone.Router.extend({
 
         this.processedFacets = _(hashParts).map(function(part){
 
-            that.selectedFacets = part.split('-');  // --> ['operating_unit','ARG']
+            var selectedFacets = part.split('-');  // --> ['operating_unit','ARG']
 
-            if (that.selectedFacets[0] === 'operating_unit') {
-                unit = that.selectedFacets[1];
-            } else if (that.selectedFacets[0] === 'donor_countries') {
-                donor = that.selectedFacets[1]
+            if (selectedFacets[0] === 'operating_unit'){
+                unit = selectedFacets[1];
+            } else if (selectedFacets[0] === 'donor_countries'){
+                donor = selectedFacets[1]
             }
             return {
-                collection: that.selectedFacets[0],
-                id: that.selectedFacets[1]
+                collection: selectedFacets[0],
+                id: selectedFacets[1]
             };
         });
 
@@ -81,7 +81,7 @@ routers.Global = Backbone.Router.extend({
         // initiate App view
         // which now contains the filter-items div
         if (!embed) {
-            // Load in the top donors info and feedback form
+            // Load in the top donors info and feedbackform dets.
             window.setTimeout(function() { $('html, body').scrollTop(0); }, 0);
             // Load the main app view
             that.app = that.app || new views.App({
@@ -258,7 +258,8 @@ routers.Global = Backbone.Router.extend({
             }
         }
 
-        var breadcrumbs = new views.Breadcrumbs();
+        new views.Breadcrumbs();
+        new views.Description();
     },
 
     project: function (id, output, embed) {

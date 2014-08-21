@@ -338,34 +338,34 @@ TopDonors = Backbone.Collection.extend({
 
 TotalModalities = Backbone.Collection.extend({
     model: Modality,
-    url: '../api/donors/total-modality.json'
+    url: 'api/donors/total-modality.json'
 })
 
 DonorModalities = Backbone.Collection.extend({
     model: Modality,
-    url: '../api/donors/donor-modality.json'
+    url: 'api/donors/donor-modality.json'
 })
 
 Countries = Backbone.Collection.extend({
     model: Country,
-    url: '../api/world.json'
+    url: 'api/world.json'
 });
 
 India = Backbone.Collection.extend({
     model: Country,
-    url: '../api/india_admin0.json'
+    url: 'api/india_admin0.json'
 });
 
 OperatingUnits = Backbone.Model.extend({
     model:OperatingUnit,
-    url: '../api/operating-unit-index.json'
+    url: 'api/operating-unit-index.json'
 });
 
 SubnationalIndices = Backbone.Model.extend({
     model:SubnationalIndex,
-    url: '../api/subnational-locs-index.json'
+    url: 'api/subnational-locs-index.json'
 });
 FocusAreaIndices = Backbone.Model.extend({
     model:FocusAreaIndex,
-    url: '../api/focus-area-index.json'
+    url: 'api/focus-area-index.json'
 });
