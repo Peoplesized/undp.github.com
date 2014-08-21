@@ -151,14 +151,17 @@
         <div class='span12'>
           <div id='donor-specific'></div>
           <div id='description'>
-            <h3>Map Summary</h3>
-            {% for intro in site.tags.intro %}
-            {{intro.content}}
-            {% endfor %}
-            <p class='desc'></p>
-            <p class='geography'></p>
+              <h3>Map Summary</h3>
+              <p class='intro' id='intro'>
+                {% for intro in site.tags.intro %}
+                {{intro.content}}
+                {% endfor %}
+                <a href = '#about/open'>Read more...</a>
+              </p>
+              <div id='desc'></div>
+              <div id='geography'></div>
           </div>
-        </div>
+        </div>i
       </div>
     </div>
     <!--end of main-container-->

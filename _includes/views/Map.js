@@ -226,21 +226,22 @@ views.Map = Backbone.View.extend({
         })
 
         // TODO description should be in template
+        // should be in the description template
         var verbDo = (projectWithNoGeo === 1) ? "does" : "do";
         var verbHave = (projectWithNoGeo === 1) ? "has" : "have";
 
         // append sub-national location paragraph
         if (projectWithNoGeo != 0 && !hasGeo){
             $('#map-filters').addClass('disabled'); // no sub filter on page
-            $('#description p.geography').html("None of these projects have geographic information.");
+            $('#geography').html("None of these projects have geographic information.");
         } else if (projectWithNoGeo != 0 && hasGeo){
-            var projectWithNoGeoParagraph = " <b>" + projectWithNoGeo
-                + "</b> of them " + verbDo + " not " + verbHave + " geographic information; the remaining <b>"
+            var projectWithNoGeoParagraph =  projectWithNoGeo
+                + " of them " + verbDo + " not " + verbHave + " geographic information; the remaining "
                 + (filteredSubs.length - projectWithNoGeo)
-                + "</b> have <b>"
+                + " have "
                 + filteredMarkers.length
-                + "</b> subnational locations in total."
-            $('#description p.geography').html(projectWithNoGeoParagraph);
+                + " subnational locations in total."
+            $('#geography').html(projectWithNoGeoParagraph);
         };
 
         // create clustered markers
