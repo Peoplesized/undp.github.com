@@ -81,7 +81,7 @@ routers.Global = Backbone.Router.extend({
         // initiate App view
         // which now contains the filter-items div
         if (!embed) {
-            // Load in the top donors info and feedbackform dets.
+            // Load in the top donors info and feedback form
             window.setTimeout(function() { $('html, body').scrollTop(0); }, 0);
             // Load the main app view
             that.app = that.app || new views.App({

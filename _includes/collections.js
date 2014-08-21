@@ -7,7 +7,7 @@ Subnationals = Backbone.Collection.extend({
     model: Subnational,
     url: function() {
         var opUnitFilter =_(global.processedFacets).findWhere({collection:"operating_unit"});
-        return '../api/units/' + opUnitFilter.id + '.json'
+        return 'api/units/' + opUnitFilter.id + '.json'
     },
     parse: function(response){
         return response.projects
@@ -22,7 +22,7 @@ Subnationals = Backbone.Collection.extend({
 
 Facets = Backbone.Collection.extend({
     model:Facet,
-    settings: [
+    facets: [
         {
             id: 'operating_unit',
             url: 'api/operating-unit-index.json',
@@ -51,13 +51,10 @@ Facets = Backbone.Collection.extend({
     ],
     initialize: function(){
         var that = this;
-        // TODO what is this////////
-        counter = 0;
-        ////////////////////////////
 
         // populate all facets
-        _(this.settings).each(function(setting){
-            that.push(setting);
+        _(this.facets).each(function(facet){
+            that.push(facet);
         });
     }
 });
