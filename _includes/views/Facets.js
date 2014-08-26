@@ -9,22 +9,23 @@ views.Facets = Backbone.View.extend({
 		var that = this;
 		var facetHTML = '';
 
-		global.app.views = {}; // what is the views
+		// a global object to host one view for each facet
+		// in their respective element
+		global.allFacetViews = {}
 
-		// create the topics divs
 		this.collection.each(function(facet){
 			facetHTML += that.template(facet);
 
 			facet.subFilters.fetch({
 				success: function (data) {
-					global.app.views[facet.id] = new views.Filters({
-					el: '#' + facet.id,
+				global.allFacetViews[facet.id] = new views.Filters({
+					el: '#' + facet.id, // element name is created based on the facet name
 					collection: facet.subFilters
 				});
 
 				_.each(global.processedFacets, function (obj) {
 					if (obj.collection === facet.id) {
-				 		global.app.views[facet.id].active = true;
+						global.allFacetViews[facet.id].active = true
 					}
 				});
 				facet.subFilters.watch();
@@ -35,6 +36,6 @@ views.Facets = Backbone.View.extend({
 			});
 		})
 
-		this.$el.html(facetHTML);
+		this.$el.html(facetHTML); // create the topics/facets divs
 	}
 });
