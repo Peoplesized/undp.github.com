@@ -39,12 +39,22 @@ routers.Global = Backbone.Router.extend({
         }
 
     },
-    selectedFacets: false,
     processedFacets: false,
+    exsitingYear: false,
     browser: function (year, path, embed) {
-        var that = this,
-            unit = false, // this should be reused throughout the site
-            donor = false;
+        // views.App (including views.YearNav)
+        // views.Map
+        // views.Facets (including views.Filters)
+        // views.Widget
+        // views.Projects (TODO not working)
+        // views.Donor (donorViz)
+        // views.Breadcrumbs
+        // views.Description
+
+
+        var that = this;
+        var unit = false, // this should be reused throughout the site
+            donorCountry = false;
 
         // Parse hash
         // hash comes in forms as 'operating_unit-ARG/donor-12300'
