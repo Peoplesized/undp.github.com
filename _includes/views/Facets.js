@@ -2,7 +2,7 @@ views.Facets = Backbone.View.extend({
 	el: '#filter-items',
 	template:_.template('<div id="<%= id %>" class="topics"></div>'),
 	initialize:function(){
-		_.bind(this,'render');
+		_.bindAll(this,'render');
 		this.collection = new Facets();
 		this.render();
 	},
