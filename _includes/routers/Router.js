@@ -96,22 +96,37 @@ routers.Global = Backbone.Router.extend({
             });
         }
 
-        // mainInterface: facets, filters, map and widget
+        // if mapView exists, remove mapView.map
+        // should modify this so that the map is only initiated once on the highest level
+        // same goes for the profileMap
+
+        if (this.projects.mapView){this.projects.mapView.map.remove();}
+
+        // if any facet is selected
+        // create a new Projects collection with new aggregated values
+        if (this.processedFacets.length) {
+            this.projects = new Projects(this.projects.filter(function(m){
+                //  search all the matching projects
+                // use reduce so that a project fulfilling multiple facets
+                // will only appear once (unique value)
+                return _(global.processedFacets).reduce(function (memo, selectedFacet) {
+                    return memo && m.get(selectedFacet.collection) == selectedFacet.id;
+                }, true);
+            }));
+        }
+
+        this.projects.view = new views.Projects({ collection: this.projects });
+
         var mainInterface = function(){
             new views.Facets();
 
             // Create summary map view
             if (!embed){
-                that.projects.map = new views.Map({
-                    el: '#homemap',
-                    collection: that.projects
-                });
-                that.projects.widget = new views.Widget({
-                    context: 'projects'
-                });
+                that.projects.mapView = new views.Map({collection: that.projects});
+                that.projects.widget = new views.Widget({context: 'projects'});
             } else {
-                that.projects.map = new views.Map({
-                    el: '#homemap',
+                debugger
+                that.projects.mapView = new views.Map({
                     collection: that.projects,
                     embed: embed
                 });

@@ -307,6 +307,7 @@ Projects = Backbone.Collection.extend({
         
         function callback() {
             that.trigger('update');
+            console.log(that)
             _(that.cb).bind(that)();
         }
 
