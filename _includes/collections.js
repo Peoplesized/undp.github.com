@@ -127,7 +127,6 @@ Projects = Backbone.Collection.extend({
             status = 0;
 
         if (!this.length) return false;
-
         // calculates the sum of the particular field
         function calc(collection,facet,category) {
 

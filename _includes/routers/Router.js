@@ -11,7 +11,8 @@ routers.Global = Backbone.Router.extend({
         'about/*subnav': 'about', // subnav --> {{post.tag}}
         'top-donors/*category': 'topDonors' //cat --> "regular"
     },
-
+    processedFacets: false,
+    exsitingYear: false,
     redirect: function() {
         this.navigate(CURRENT_YR, {trigger: true});
     },
@@ -21,15 +22,18 @@ routers.Global = Backbone.Router.extend({
     },
 
     fiscalyear: function (year, path, embed) {
+
         var that = this;
 
-        if (year === CURRENT_YR){
+        if (!this.existingYear) {this.existingYear = year}
 
-            this.allProjects = new Projects();
-            this.allProjects.url = 'api/project_summary_' + year + '.json';
+        if (year.indexOf(FISCALYEARS)){
+
+            this.projects = new Projects();
+            this.projects.url = 'api/project_summary_' + year + '.json';
 
             // can we use listenTo instead?
-            this.allProjects.fetch({
+            this.projects.fetch({
                 success:function(){
                     that.browser(year, path, embed);
                 }
@@ -37,10 +41,7 @@ routers.Global = Backbone.Router.extend({
         } else {
             that.project(year, false,false); // in this case year is the project id
         }
-
     },
-    processedFacets: false,
-    exsitingYear: false,
     browser: function (year, path, embed) {
         // views.App (including views.YearNav)
         // views.Map
@@ -50,7 +51,6 @@ routers.Global = Backbone.Router.extend({
         // views.Donor (donorViz)
         // views.Breadcrumbs
         // views.Description
-
 
         var that = this;
         var unit = false, // this should be reused throughout the site
@@ -75,21 +75,11 @@ routers.Global = Backbone.Router.extend({
             };
         });
 
-        // custom filter function
-        // TODO clarify
-        var customFilter = function (model) {
-            if (!that.processedFacets.length) return true;
-            return _(that.processedFacets).reduce(function (memo, filter) {
-                if (filter.collection === 'region') {
-                    return memo && model.get(filter.collection) == filter.id;
-                } else {
-                    return memo && (model.get(filter.collection) && model.get(filter.collection).indexOf(filter.id) >= 0);
-                }
-            }, true);
-        };
-
         // initiate App view
-        // which now contains the filter-items div
+        // which contains the filter-items div
+        // used in Facets()
+
+
         if (!embed) {
             // Load in the top donors info and feedbackform dets.
             window.setTimeout(function() { $('html, body').scrollTop(0); }, 0);
