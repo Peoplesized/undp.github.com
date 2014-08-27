@@ -192,13 +192,19 @@ routers.Global = Backbone.Router.extend({
     },
 
     project: function (id, output, embed) {
+        // views.Nav
+        // views.ProjectProfile
+        // views.Widget
+        // views.Donor (donorViz)
+        // views.Breadcrumbs
+        // views.Description
+
         var that = this;
 
         if (!embed) {
-            // Load in feedbackform deats
-            that.feedback();
 
-            var nav = new views.Nav({add:'project'});
+            that.feedback();
+            new views.Nav({add:'project'});
 
             window.setTimeout(function() { $('html, body').scrollTop(0); }, 0);
 

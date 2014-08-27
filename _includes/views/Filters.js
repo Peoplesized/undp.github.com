@@ -19,7 +19,7 @@ views.Filters = Backbone.View.extend({
                 // Use donor level financial data if available
                 if (active[0].collection.id === 'donors') {
                     donor = active[0].id;
-                    global.projects.map.collection.donorID = donor;
+                    global.projects.mapView.collection.donorID = donor;
                 }
                 // Add a filtered class to all parent containers
                 // where an active element has been selected.
@@ -121,7 +121,7 @@ views.Filters = Backbone.View.extend({
                     global.filtercounter = (global.filtercounter) ? global.filtercounter + 1 : 2;
                 } else {
                     global.filtercounter = 0;
-                    if (!keypress) global.projects.map.render();
+                    if (!keypress) global.projects.mapView.render();
                 }
 
             }
@@ -220,9 +220,9 @@ views.Filters = Backbone.View.extend({
                                     .reduce(function(memo, num){ return memo + num; }, 0).value();
                                     
                                 if (donor || donor_ctry) {
-                                    if (donor) global.projects.map.collection.donorID = false;      
-                                    global.projects.map.collection.donorBudget[donor] = donorBudget;
-                                    global.projects.map.collection.donorExpenditure[donor] = donorExpenditure;
+                                    if (donor) global.projects.mapView.collection.donorID = false;      
+                                    global.projects.mapView.collection.donorBudget[donor] = donorBudget;
+                                    global.projects.mapView.collection.donorExpenditure[donor] = donorExpenditure;
                                 }
 
                             } else {
@@ -272,9 +272,9 @@ views.Filters = Backbone.View.extend({
                                             }, 0).value() : 0;
                                 }
                                 if (donor || donor_ctry) {
-                                    if (donor) global.projects.map.collection.donorID = false;
-                                    global.projects.map.collection.operating_unitBudget[model.get('id')] = donorBudget;
-                                    global.projects.map.collection.operating_unitExpenditure[model.get('id')] = donorExpenditure;
+                                    if (donor) global.projects.mapView.collection.donorID = false;
+                                    global.projects.mapView.collection.operating_unitBudget[model.get('id')] = donorBudget;
+                                    global.projects.mapView.collection.operating_unitExpenditure[model.get('id')] = donorExpenditure;
                                 }
                             }
                             /* Akshay- before was M now so commenting out to show all figures ange getting rid of M.                        was

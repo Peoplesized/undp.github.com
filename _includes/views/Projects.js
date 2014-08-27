@@ -36,11 +36,11 @@ views.Projects = Backbone.View.extend({
 
         if (donor) {
             $('#total-donors').parent().hide();
-            if (global.projects.map.updateMap) {
+            if (global.projects.mapView.updateMap) {
                 var $target = $('.layers li:first a');
                 $('.map-btn').removeClass('active');
                 $target.addClass('active');
-                global.projects.map.updateMap($target.attr('data-value'));
+                global.projects.mapView.updateMap($target.attr('data-value'));
             }
 
         } else {

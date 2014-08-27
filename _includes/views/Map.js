@@ -1,4 +1,5 @@
 views.Map = Backbone.View.extend({
+    el: '#homemap',
     initialize: function() {
         this.nations = new Nationals();
         this.nations.fetch();

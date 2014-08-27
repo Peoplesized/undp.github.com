@@ -33,15 +33,6 @@ views.App = Backbone.View.extend({
                 base: BASE_URL,
                 year: this.options.year
             }));
-
-            // disable this until browser sniffing functions
-            // if (IE) {
-            //     $('#ie-banner').show();
-            // $('#banner-close').on('click',function(e){
-            //     e.preventDefault();
-            //     $('#ie-banner').hide();
-            // });
-            // }
         }
 
 
@@ -60,8 +51,6 @@ views.App = Backbone.View.extend({
         //     $('ul.layers li').removeClass('no-hover');
         //     $('ul.layers li.hdi .graph').removeClass('active');
         // }
-
-
 
         // adding years in render since the year div is part of app template
         this.years = new views.YearNav();
@@ -228,7 +217,7 @@ views.App = Backbone.View.extend({
             $target.addClass('active');
         }
 
-        global.projects.map.buildLayer(this.layer); // see Map.js
+        global.projects.mapView.buildLayer(this.layer); // see Map.js
         return false;
     },
 
@@ -291,10 +280,10 @@ views.App = Backbone.View.extend({
         $('.map-filter').removeClass('active');
         $('#'+$target.id).addClass('active');
 
-        var currentCenter = global.projects.map.map.getCenter(),
-            currentZoom = global.projects.map.map.getZoom();
+        var currentCenter = global.projects.mapView.map.getCenter(),
+            currentZoom = global.projects.mapView.map.getZoom();
 
-        global.projects.map.buildLayer(this.layer,subFilter,currentCenter,currentZoom); // see Map.js
+        global.projects.mapView.buildLayer(this.layer,subFilter,currentCenter,currentZoom); // see Map.js
     },
 
     activeMap: function(e) {
@@ -302,7 +291,7 @@ views.App = Backbone.View.extend({
         $('.view-switch a').removeClass('active');
         $(e.target).addClass('active');
         $('#mainnav li').first().addClass('re-active');
-        setTimeout(function(){global.projects.map.map.invalidateSize({pan:true});}, 200);
+        setTimeout(function(){global.projects.mapView.map.invalidateSize({pan:true});}, 200);
     },
 
     layersBack: function(e) {
