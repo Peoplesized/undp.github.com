@@ -56,6 +56,9 @@ Facets = Backbone.Collection.extend({
         _(this.facets).each(function(facet){
             that.push(facet);
         });
+    },
+    idsOnly: function(){
+        return this.map(function(m){return m.get('id');});
     }
 });
 
