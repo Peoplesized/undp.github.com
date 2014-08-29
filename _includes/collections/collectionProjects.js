@@ -7,8 +7,10 @@ Projects = Backbone.Collection.extend({
         this.update();
         this.on('reset', this.update, this);
     },
-    getSumFacet:function(facetName){
-        var valuesUnderFacetName = this.pluck(facetName);
+    getSumValuesOfFacet:function(facetName){
+        // the sum of the values from selected facet
+        // applies to focus_area, region and operating_unit
+        var valuesUnderFacetName = this.pluck(facetName);  // returns values
         var sumValues = _.chain(valuesUnderFacetName)
             .chain()
             .flatten()
@@ -17,7 +19,9 @@ Projects = Backbone.Collection.extend({
         return sumValues.value()
     },
     getDonorCountires:function(){
-        var allDonorCountires = this.pluck('donor_countries'); //array of arrays
+        // the sum of donor countries
+        // donor countries is an array associated with a project
+        var allDonorCountires = this.pluck('donor_countries'); // returns arrays
 
         var sumDonorCountries = _.chain(allDonorCountires)
             .map(function(donorId){ return _.uniq(donorId);})
@@ -47,177 +51,242 @@ Projects = Backbone.Collection.extend({
 
         return sumDonorsUnderUnit.value()
     },
-    calc: function(collection,facet,category){
-        collection[facet + category.capitalize()] = _.reduce(collection.models, function(memo,model) {
-            if (_.isArray(model.get(facet))) {
-                _.each(model.get(facet), function(o) {
-                    if (!(o in memo)) {
-                        memo[o] = model.get(category);
-                    } else {
-                        memo[o] += model.get(category);
-                    }
-                });
+    addFinance: function(keyUnderFacet,memoObject,finance){
+        if (!(keyUnderFacet in memoObject)) {
+            memoObject[keyUnderFacet] = finance
+        } else {
+            memoObject[keyUnderFacet] += finance
+        }
+    },
+    getBudgetAndExpense: function(collection,facetName,category){ // category is "budget" or "expenditure"
+        // the sum of budget (or expenditure) of respective facet
+        // for example: donor_countriesBudget is the budget sum of
+        // the category is capitalized here
+        var facetCategory = facetName + category.capitalize(),
+            facetSubkey,
+            projectFinance;
+
+        // Populate the new key/value associated with the Projects collection
+        collection[facetCategory] = _.reduce(collection.models, function(memo,model) {
+
+            facetSubkey = model.get(facetName),
+            projectFinance = model.get(category);
+
+            if (_.isArray(facetSubkey)) {
+
+                _.each(facetSubkey, function(key){
+                    this.addFinance(key,memo,projectFinance);
+                },this); // scope binding to _.each
+
             } else {
-                if (!(model.get(facet) in memo)) {
-                    memo[model.get(facet)] = model.get(category);
-                } else {
-                    memo[model.get(facet)] += model.get(category);
-                }
+
+                this.addFinance(facetSubkey,memo,projectFinance);
+
             }
-            return memo;
-        }, {});
+
+            return memo
+        }, {}, this); // scope binding to _.reduce
     },
     update: function() {
         var facets = new Facets().idsOnly(); // donors, donor_countries, operating_unit, focus_area, region
 
-        var that = this,
-            processes = 5 + facets.length,
-            status = 0;
+        // var processes = 5 + facets.length,
+        //     status = 0;
 
         if (!this.length) return false;
 
         // calculate needed value to populate filters, circles and summary fields
-        that['donors'] = that.getSumFacet('donors');
-        that['focus_area'] = that.getSumFacet('focus_area')
-        that['region'] = that.getSumFacet('region')
-        that['operating_unit'] = that.getSumFacet('operating_unit')
-        that['donor_countries'] = that.getDonorCountires();
+        this['donors'] = this.getSumValuesOfFacet('donors');
+        this['focus_area'] = this.getSumValuesOfFacet('focus_area')
+        this['region'] = this.getSumValuesOfFacet('region')
+        this['operating_unit'] = this.getSumValuesOfFacet('operating_unit')
+        this['donor_countries'] = this.getDonorCountires();
 
         // "Budget Sources" in summary
-        that['operating_unitSources'] = this.getUnitSources();        
+        this['operating_unitSources'] = this.getUnitSources();        
+
+        // calculate budgets and expenditures associated with each facet
+        _.each(facets,function(facet){
+            this.getBudgetAndExpense(this,facet,'budget');
+            this.getBudgetAndExpense(this,facet,'expenditure');
+        },this);
+
+        // calculate general budgets and expenditures 
+        this['budget'] = this.reduce(function(memo, model) {
+            return memo + parseFloat(model.get('budget'));
+        },0,this);
+
+        this['expenditure'] = this.reduce(function(memo, model) {
+            return memo + parseFloat(model.get('expenditure'));
+        }, 0,this);
+
+        this['donorBudget'] = this.reduce(function(memo, model) {
+            _.each(model.get('donors'),function(donor, i) {
+                var budget = model.get('donor_budget')[i] || 0;
+                    memo[donor] = memo[donor] + budget || budget;
+            },this);
+            return memo;
+        }, {},this);
+
+        this['donorExpenditure'] = this.reduce(function(memo, model) {
+            _.each(model.get('donors'),function(donor, i) {
+                var budget = model.get('donor_expend')[i] || 0;
+                memo[donor] = memo[donor] +  budget || budget;
+            },this);
+            return memo;
+        }, {},this);
+
+        this['ctryBudget'] = this.reduce(function(memo, model) {
+            _.each(model.get('donor_countries'),function(donor, i) {
+                var budget = model.get('donor_budget')[i] || 0;
+                memo[donor] = memo[donor] + budget || budget;
+            },this);
+            return memo;
+        }, {},this);
+
+        this.ctryExpenditure = this.reduce(function(memo, model) {
+            _.each(model.get('donor_countries'),function(donor, i) {
+                var budget = model.get('donor_expend')[i] || 0;
+                memo[donor] = memo[donor] +  budget || budget;
+            },this);
+            return memo;
+        }, {},this);
+
+        this.trigger('update');
+        // _.bind(this.cb,this)();
 
         // Count projects for each facet
-        _(facets).each(function(facet) {
+        // _(facets).each(function(facet) {
 
-            setTimeout(function() {
-                var subStatus = 0,
-                    subProcesses = 1;
+        //     setTimeout(function() {
+        //         var subStatus = 0,
+        //             subProcesses = 1;
 
-                setTimeout(function() {
-                    that.calc(that,facet,'budget');
-                    if (subStatus === subProcesses) {
-                        subCallback();
-                    } else {
-                        subStatus++;
-                    }
-                }, 0);
+        //         setTimeout(function() {
+        //             that.getBudgetAndExpense(that,facet,'budget');
+        //             if (subStatus === subProcesses) {
+        //                 subCallback();
+        //             } else {
+        //                 subStatus++;
+        //             }
+        //         }, 0);
 
-                setTimeout(function() {
-                    that.calc(that,facet,'expenditure');
-                    if (subStatus === subProcesses) {
-                        subCallback();
-                    } else {
-                        subStatus++;
-                    }
-                }, 0);
+        //         setTimeout(function() {
+        //             that.getBudgetAndExpense(that,facet,'expenditure');
+        //             if (subStatus === subProcesses) {
+        //                 subCallback();
+        //             } else {
+        //                 subStatus++;
+        //             }
+        //         }, 0);
 
-                function subCallback() {
-                    if (status === processes) {
-                        callback();
-                    } else {
-                        status++;
-                    }
-                }
+        //         function subCallback() {
+        //             if (status === processes) {
+        //                 callback();
+        //             } else {
+        //                 status++;
+        //             }
+        //         }
 
-            }, 0);
+        //     }, 0);
 
-        }, this);
+        // }, this);
 
-        setTimeout(function() {
-            // Total budget
-            that.budget = that.reduce(function(memo, project) {
-                return memo + parseFloat(project.get('budget'));
-            }, 0);
-            if (status === processes) {
-                callback();
-            } else {
-                status++;
-            }
-        }, 0);
+        // setTimeout(function() {
+        //     // Total budget
+        //     that.budget = that.reduce(function(memo, project) {
+        //         return memo + parseFloat(project.get('budget'));
+        //     }, 0);
+        //     if (status === processes) {
+        //         callback();
+        //     } else {
+        //         status++;
+        //     }
+        // }, 0);
 
-        setTimeout(function() {
-            // Donor budgets
-            that.donorBudget = that.reduce(function(memo, project) {
-                _(project.get('donors')).each(function(donor, i) {
-                    var budget = project.get('donor_budget')[i] || 0;
-                    memo[donor] = memo[donor] +  budget || budget;
-                });
-                return memo;
-            }, {});
-            if (status === processes) {
-                callback();
-            } else {
-                status++;
-            }
-        }, 0);
+        // setTimeout(function() {
+        //     // Donor budgets
+        //     that.donorBudget = that.reduce(function(memo, project) {
+        //         _(project.get('donors')).each(function(donor, i) {
+        //             var budget = project.get('donor_budget')[i] || 0;
+        //             memo[donor] = memo[donor] +  budget || budget;
+        //         });
+        //         return memo;
+        //     }, {});
+        //     if (status === processes) {
+        //         callback();
+        //     } else {
+        //         status++;
+        //     }
+        // }, 0);
         
-        setTimeout(function() {
-            // Funding by Country budgets
-            that.ctryBudget = that.reduce(function(memo, project) {
-                _(project.get('donor_countries')).each(function(donor, i) {
-                    var budget = project.get('donor_budget')[i] || 0;
-                    memo[donor] = memo[donor] +  budget || budget;
-                });
-                return memo;
-            }, {});
-            if (status === processes) {
-                callback();
-            } else {
-                status++;
-            }
-        }, 0);
+        // setTimeout(function() {
+        //     // Funding by Country budgets
+        //     that.ctryBudget = that.reduce(function(memo, project) {
+        //         _(project.get('donor_countries')).each(function(donor, i) {
+        //             var budget = project.get('donor_budget')[i] || 0;
+        //             memo[donor] = memo[donor] +  budget || budget;
+        //         });
+        //         return memo;
+        //     }, {});
+        //     if (status === processes) {
+        //         callback();
+        //     } else {
+        //         status++;
+        //     }
+        // }, 0);
 
-        setTimeout(function() {
-            // Total expenditure
-            that.expenditure = that.reduce(function(memo, project) {
-                return memo + parseFloat(project.get('expenditure'));
-            }, 0);
-            if (status === processes) {
-                callback();
-            } else {
-                status++;
-            }
+        // setTimeout(function() {
+        //     // Total expenditure
+        //     that.expenditure = that.reduce(function(memo, project) {
+        //         return memo + parseFloat(project.get('expenditure'));
+        //     }, 0);
+        //     if (status === processes) {
+        //         callback();
+        //     } else {
+        //         status++;
+        //     }
 
-        }, 0);
+        // }, 0);
 
-        setTimeout(function() {
-            // Donor expenditure
-            that.donorExpenditure = that.reduce(function(memo, project) {
-                _(project.get('donors')).each(function(donor, i) {
-                    var budget = project.get('donor_expend')[i] || 0;
-                    memo[donor] = memo[donor] +  budget || budget;
-                });
-                return memo;
-            }, {});
-            if (status === processes) {
-                callback();
-            } else {
-                status++;
-            }
+        // setTimeout(function() {
+        //     // Donor expenditure
+        //     that.donorExpenditure = that.reduce(function(memo, project) {
+        //         _(project.get('donors')).each(function(donor, i) {
+        //             var budget = project.get('donor_expend')[i] || 0;
+        //             memo[donor] = memo[donor] +  budget || budget;
+        //         });
+        //         return memo;
+        //     }, {});
+        //     if (status === processes) {
+        //         callback();
+        //     } else {
+        //         status++;
+        //     }
 
-        }, 0);
+        // }, 0);
         
-        setTimeout(function() {
-            // Funding by Country expenditure
-            that.ctryExpenditure = that.reduce(function(memo, project) {
-                _(project.get('donor_countries')).each(function(donor, i) {
-                    var budget = project.get('donor_expend')[i] || 0;
-                    memo[donor] = memo[donor] +  budget || budget;
-                });
-                return memo;
-            }, {});
-            if (status === processes) {
-                callback();
-            } else {
-                status++;
-            }
+        // setTimeout(function() {
+        //     // Funding by Country expenditure
+        //     that.ctryExpenditure = that.reduce(function(memo, project) {
+        //         _(project.get('donor_countries')).each(function(donor, i) {
+        //             var budget = project.get('donor_expend')[i] || 0;
+        //             memo[donor] = memo[donor] +  budget || budget;
+        //         });
+        //         return memo;
+        //     }, {});
+        //     if (status === processes) {
+        //         callback();
+        //     } else {
+        //         status++;
+        //     }
 
-        }, 0);
+        // }, 0);
         
-        function callback() {
-            that.trigger('update');
-            _.bind(that.cb,that)();
-        }
+        // function callback() {
+        //     that.trigger('update');
+        //     _.bind(that.cb,that)();
+        // }
 
     },
     comparator: function(model) {
