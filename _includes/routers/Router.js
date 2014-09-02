@@ -26,7 +26,7 @@ routers.Global = Backbone.Router.extend({
 
         if (!this.existingYear) {this.existingYear = year}
 
-        if (year.indexOf(FISCALYEARS)){
+        if ((FISCALYEARS).indexOf(year) > -1){ // if year exsits in FISCALYEARS array
 
             this.projects = new Projects();
             this.projects.url = 'api/project_summary_' + year + '.json';
@@ -38,19 +38,13 @@ routers.Global = Backbone.Router.extend({
                 }
             });
         } else {
-            that.project(year, false,false); // in this case year is the project id
+            this.project(year, false,false); // in this case "year" is the project id
         }
-    },
-    browser: function (year, path, embed) {
-        // views.App (including views.YearNav)
-        // views.Map
-        // views.Facets (including views.Filters)
-        // views.Widget
-        // views.Projects (TODO not working)
-        // views.Donor (donorViz)
-        // views.Breadcrumbs
-        // views.Description
 
+    },
+    processedFacets: false,
+    exsitingYear: false,
+    browser: function (year, path, embed) {
         var that = this;
         var unit = false, // this should be reused throughout the site
             donorCountry = false;
