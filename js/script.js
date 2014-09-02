@@ -101,7 +101,9 @@ $(document).ready(function() {
         app = {};
 
     {% include models.js %}
-    {% include collections.js %}
+    {% include collections/collections.js %}
+    {% include collections/collectionProjects.js %}
+    {% include collections/collectionFilters.js %}
 
     // Views
     {% include views/App.js %}
