@@ -11,8 +11,7 @@ routers.Global = Backbone.Router.extend({
         'about/*subnav': 'about', // subnav --> {{post.tag}}
         'top-donors/*category': 'topDonors' //cat --> "regular"
     },
-    processedFacets: false,
-    exsitingYear: false,
+
     redirect: function() {
         this.navigate(CURRENT_YR, {trigger: true});
     },
