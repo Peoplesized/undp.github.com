@@ -68,33 +68,6 @@ routers.Global = Backbone.Router.extend({
             };
         });
 
-        // initiate App view
-        // which contains the filter-items div
-        // used in Facets()
-
-
-        if (!embed) {
-            // Load in the top donors info and feedbackform dets.
-            window.setTimeout(function() { $('html, body').scrollTop(0); }, 0);
-            // Load the main app view
-            that.app = that.app || new views.App({
-                el: '#browser',
-                year: year
-            });
-        } else {
-            that.app = that.app || new views.App({
-                el: '#embed',
-                year: year,
-                embed: embed
-            });
-        }
-
-        // if mapView exists, remove mapView.map
-        // should modify this so that the map is only initiated once on the highest level
-        // same goes for the profileMap
-
-        if (this.projects.mapView){this.projects.mapView.map.remove();}
-
         // if any facet is selected
         // create a new Projects collection with new aggregated values
         if (this.processedFacets.length) {
@@ -108,55 +81,49 @@ routers.Global = Backbone.Router.extend({
             }));
         }
 
-        this.projects.view = new views.Projects({ collection: this.projects });
+        this.projects.watch();
 
-        var mainInterface = function(){
-            new views.Facets();
-
-            // Create summary map view
-            if (!embed){
-                that.projects.mapView = new views.Map({collection: that.projects});
-                that.projects.widget = new views.Widget({context: 'projects'});
-            } else {
-                debugger
-                that.projects.mapView = new views.Map({
-                    collection: that.projects,
-                    embed: embed
-                });
-            }
-
-        };
-
-        if (that.fiscalYear != year){
-            // if (that.fiscalYear && that.fiscalYear != year){that.projects.map.map.remove();}
-            that.fiscalYear = year;
-
-            that.projects = new Projects(that.allProjects.filter(customFilter));
-            that.projects.view = new views.Projects({ collection: that.projects });
-
-            // TODO what is this?
-            that.projects.cb = _(mainInterface).bind(that);
-            that.projects.watch();
-
-            that.app.updateYear(year);
+        // initiate App view
+        // which contains the filter-items div
+        // used in Facets()
+        if (!embed) {
+            // Load in the top donors info and feedbackform dets.
+            window.setTimeout(function() { $('html, body').scrollTop(0); }, 0);
+            // Load the main app view
+            that.app = that.app || new views.App({
+                el: '#browser',
+            });
         } else {
-            // if projects are already present
-            // that.projects.cb = updateDescription;
-            that.projects.reset(that.allProjects.filter(customFilter));
+            that.app = that.app || new views.App({
+                el: '#embed',
+                embed: embed //['title','map','projects'] from widgetOpts
+            });
         }
 
+        // if mapView exists, remove mapView.map
+        // should modify this so that the map is only initiated once on the highest level
+        // same goes for the profileMap
+        if (this.projects.mapView){this.projects.mapView.map.remove();}
+        // Create summary map view
+        if (!embed){
+            that.projects.mapView = new views.Map();
+            that.projects.widget = new views.Widget({context: 'projects'});
+        } else {
+            that.projects.mapView = new views.Map({
+                embed: embed
+            });
+        }
+
+        this.app.updateYear(year);
 
         // Check for funding countries to show donor visualization
-        if (donor){
-            that.donor = new views.Donors ();
+        if (donorCountry){
+            that.donor = new views.Donors();
             $('#donor-view').show();
         } else {
             that.donor = false;
             $('#donor-view').hide();
         }
-
-        // Save default description
-        that.defaultDescription = that.defaultDescription || $('#description p.intro').html();
 
         // Show proper HDI data
         if (unit && ((HDI[unit]) ? HDI[unit].hdi != '' : HDI[unit])) {
@@ -182,6 +149,9 @@ routers.Global = Backbone.Router.extend({
 
         new views.Breadcrumbs();
         new views.Description();
+        // TODO not working
+        new views.Projects();
+        new views.Facets();
     },
 
     project: function (id, output, embed) {
