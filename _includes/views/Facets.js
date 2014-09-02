@@ -39,8 +39,6 @@ views.Facets = Backbone.View.extend({
 
 		},this) // ensure the context refers to the view, so that var that = this is not needed
 
-		console.log(global.allFacetViews)
-
 		this.$el.html(facetHTML); // create the topics/facets divs
 	}
 });

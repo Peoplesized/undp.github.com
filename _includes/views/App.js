@@ -12,7 +12,6 @@ views.App = Backbone.View.extend({
         'click .view-switch a': 'activeMap',
         'click a#layers-back': 'layersBack'
     },
-    
     initialize: function(options) {
         // Toggle country selector
         $(window).on('click', '#country-selector', _(this.showCountries).bind(this));
@@ -31,7 +30,7 @@ views.App = Backbone.View.extend({
         } else {
             this.$el.empty().append(templates.app({
                 base: BASE_URL,
-                year: this.options.year
+                year: global.existingYear
             }));
         }
 
@@ -70,13 +69,13 @@ views.App = Backbone.View.extend({
             }
         });
 
-        this.selectYear(this.options.year);
+        this.selectYear(global.existingYear);
 
         return this;
     },
 
     selectYear: function(year) {
-        var yearId = 'year-' + this.options.year;
+        var yearId = 'year-' + global.existingYear;
         // set selected year as filtered
         $('#year .filter-items').find('a#'+yearId).removeClass('inactive').addClass('active');
 
