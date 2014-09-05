@@ -51,18 +51,6 @@ Subnational = Backbone.Model.extend({ // the model is a country with subcollecti
     }
 });
 
-Filter = Backbone.Model.extend({
-    defaults: {
-        active: false,
-        visible: true
-    },
-    initialize: function() {
-        if (this.collection.id === 'donors' && this.id === '00012') {
-            this.set({ name: 'UNDP Regular Resources' }, { silent: true });
-        }
-    }
-});
-
 Project = Backbone.Model.extend({
     defaults: { visible: true },
     url: function() {
@@ -76,15 +64,18 @@ Facet = Backbone.Model.extend({
         name:'',
         url:''
     },
-    initialize: function(){
-        var that = this;
-        // start the filters under each Facet model
-        this.subFilters = new Filters();
+    initialize: function(){}
+});
 
-        // the subCollection (aka Filters) inherit the facets fields
-        this.subFilters.id = this.get('id');
-        this.subFilters.name = this.get('name');
-        this.subFilters.url = this.get('url');
+Filter = Backbone.Model.extend({
+    defaults: {
+        active: false,
+        visible: true
+    },
+    initialize: function() {
+        if (this.collection.id === 'donors' && this.id === '00012') {
+            this.set({ name: 'UNDP Regular Resources' }, { silent: true });
+        }
     }
 });
 

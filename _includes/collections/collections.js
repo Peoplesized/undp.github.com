@@ -50,12 +50,11 @@ Facets = Backbone.Collection.extend({
         }
     ],
     initialize: function(){
-        var that = this;
-
         // populate all facets
+        // with predefined values
         _(this.facets).each(function(facet){
-            that.push(facet);
-        });
+            this.push(facet);
+        },this);
     },
     idsOnly: function(){
         return this.map(function(m){return m.get('id');});
