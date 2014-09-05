@@ -1,48 +1,52 @@
+// In Filters the whole list of global projects are being processed
+// to fit the processedFacets
 Filters = Backbone.Collection.extend({
     model: Filter,
     watch: function() {
+        // this === facet and its subfilters
         this.update();
-        global.projects.on('update', this.update, this);
+        this.on('update', this.update, this);
     },
     update: function() {
-        // in the Filters collection
-        var collection = this,
-            active = _(global.processedFacets).find(function(filter) {
-                return (collection.id === filter.collection);
-            });
 
-        var activeCollection = collection.where({active:true});
+        // global.processedFacets {collection:"operating_unit",id:"AFG"}
+        // use findWhere instead of find to be consistent with the rest of the site
+        var activeFacet = _.findWhere(global.processedFacets, {collection: this.id}); 
 
-        // set all models to be active: false
-        _.each(activeCollection, function(model) {
-            model.set('active', false);
-        });
-
-        if (active) {
-            var model = this.get(active.id);
-            var count = global.projects[collection.id][model.id];
-            var budget = global.projects[collection.id + 'Budget'][model.id];
-            var expenditure = global.projects[collection.id + 'Expenditure'][model.id];
-            model.set({
-                active: true,
-                count: count,
-                budget: budget,
-                expenditure: expenditure
-            });
-
-        } else {
-            collection.each(function(model) {
-                var count = global.projects[collection.id][model.id];
-                var budget = global.projects[collection.id + 'Budget'][model.id];
-                var expenditure = global.projects[collection.id + 'Expenditure'][model.id];
+        // if there is no filters selected
+        // get all the models and aggregate all facets
+        if (!activeFacet) {
+            this.each(function(model) {
                 model.set({
-                    count: count,
-                    budget: budget,
-                    expenditure: expenditure
+                    count: this.aggregate(model).count,
+                    budget: this.aggregate(model).budget,
+                    expenditure: this.aggregate(model).expenditure
                 });
+            },this);
+        // if these is a filter
+        // set that filter as active
+        } else {
+            var subfilter = this.get(activeFacet.id);
+            subfilter.set({
+                active: true,
+                count: this.aggregate(subfilter).count,
+                budget: this.aggregate(subfilter).budget,
+                expenditure: this.aggregate(subfilter).expenditure,
             });
+            debugger
         }
+
         this.trigger('update');
+    },
+    aggregate: function(m){
+        var count = global.projects[this.id][m.id];
+        var budget = global.projects[this.id + 'Budget'][m.id];
+        var expenditure = global.projects[this.id + 'Expenditure'][m.id];
+        return {
+            'count': count,
+            'budget': budget,
+            'expenditure':expenditure
+        }
     },
     comparator: function(model) {
         return -1 * model.get('budget') || 0;
