@@ -15,6 +15,18 @@
 <script name='widget' type='text/html'>{% include templates/widget._ %}</script>
 
 <script name='description' id='description' type='text/html'>{% include templates/description._ %}</script>
+
+
+<script id='facet' type='text/html'>
+	<div id='<%= id %>' class='topics'>
+		<a href='#' data-category='<%= id %>' class='label'>
+			<span class='open'></span>
+			<%= name %>
+		</a>
+		<ul class='filter-items'></ul>
+	</div>
+</script>
+
 <!-- Google Analytics -->
 <script type="text/javascript">
 
