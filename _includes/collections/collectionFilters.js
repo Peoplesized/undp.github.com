@@ -9,9 +9,9 @@ Filters = Backbone.Collection.extend({
     },
     update: function() {
 
-        // global.processedFacets {collection:"operating_unit",id:"AFG"}
+        // global.processedFacets {facet:"operating_unit",id:"AFG"}
         // use findWhere instead of find to be consistent with the rest of the site
-        var activeFacet = _.findWhere(global.processedFacets, {collection: this.id}); 
+        var activeFacet = _.findWhere(global.processedFacets, {facet: this.id}); 
 
         // if there is no filters selected
         // get all the models and aggregate all facets

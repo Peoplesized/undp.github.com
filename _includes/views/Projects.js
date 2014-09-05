@@ -21,10 +21,10 @@ views.Projects = Backbone.View.extend({
     render: function() {
 
         var donor = _(global.processedFacets).find(function(filter) {
-                return filter.collection === 'donors';
+                return filter.facet === 'donors';
             }),
             donor_ctry = _(global.processedFacets).find(function(filter) {
-                return filter.collection === 'donor_countries';
+                return filter.facet === 'donor_countries';
             }),
             models = _(this.collection.filter(function(model) {
                 return model.get('visible');

@@ -36,7 +36,7 @@ views.Filters = Backbone.View.extend({
                 view.collection.sort();
                 
                 if (view.collection.id === 'donors') {
-                    var donorCountry = _(global.processedFacets).where({ collection: 'donor_countries' });
+                    var donorCountry = _(global.processedFacets).where({ facet: 'donor_countries' });
                     donorCountry = (donorCountry.length) ? donorCountry[0].id : false;
                 }
 
@@ -182,10 +182,10 @@ views.Filters = Backbone.View.extend({
                 } else if (view.collection.id === 'operating_unit' || view.collection.id === 'donors' || view.collection.id === 'donor_countries') {
 
                     donor = (_(global.processedFacets).find(function(filter) {
-                            return filter.collection === 'donors';
+                            return filter.facet === 'donors';
                         }) || {id: 0}).id;
                     donor_ctry = (_(global.processedFacets).find(function(filter) {
-                            return filter.collection === 'donor_countries';
+                            return filter.facet === 'donor_countries';
                         }) || {id: 0}).id;
 
                     var max = '',

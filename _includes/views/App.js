@@ -255,7 +255,7 @@ views.App = Backbone.View.extend({
             var filters = _(global.processedFacets).chain()
                 .compact()
                 .map(function(filter) {
-                    return filter.collection + '-' + filter.id;
+                    return filter.facet + '-' + filter.id;
                 })
                 .value().join('/');
 

@@ -63,7 +63,7 @@ routers.Global = Backbone.Router.extend({
                 donor = selectedFacets[1]
             }
             return {
-                collection: selectedFacets[0],
+                facet: selectedFacets[0],
                 id: selectedFacets[1]
             };
         });

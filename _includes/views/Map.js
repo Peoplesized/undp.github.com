@@ -11,11 +11,8 @@ views.Map = Backbone.View.extend({
             category;
 
         // detect filters
-        view.regionFilter =_(global.processedFacets).findWhere({collection:"region"});
-        view.opUnitFilter =_(global.processedFacets).findWhere({collection:"operating_unit"});
-
-        // remove previous map http://leafletjs.com/reference.html#map-remove
-        if (view.map){view.map.remove();}
+        view.regionFilter =_(global.processedFacets).findWhere({facet:"region"});
+        view.opUnitFilter =_(global.processedFacets).findWhere({facet:"operating_unit"});
 
         // remove 'operating unit has no geo' paragraph
         view.$el.find('.inner-grey').remove();
