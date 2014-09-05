@@ -72,11 +72,11 @@ routers.Global = Backbone.Router.extend({
         // create a new Projects collection with new aggregated values
         if (this.processedFacets.length) {
             this.projects = new Projects(this.projects.filter(function(m){
-                //  search all the matching projects
+                // search all the matching projects
                 // use reduce so that a project fulfilling multiple facets
                 // will only appear once (unique value)
-                return _(global.processedFacets).reduce(function (memo, selectedFacet) {
-                    return memo && m.get(selectedFacet.collection) == selectedFacet.id;
+                return _(global.processedFacets).reduce(function (memo, selected) {
+                    return memo && m.get(selected.facet) == selected.id;
                 }, true);
             }));
         }
