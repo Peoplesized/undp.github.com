@@ -3,7 +3,7 @@
 Filters = Backbone.Collection.extend({
     model: Filter,
     watch: function() {
-        // this === facet and its subfilters
+        // this --> facet and its subfilters
         this.update();
         this.on('update', this.update, this);
     },
@@ -23,9 +23,10 @@ Filters = Backbone.Collection.extend({
                     expenditure: this.aggregate(model).expenditure
                 });
             },this);
-        // if these is a filter
+        // if there is a filter
         // set that filter as active
         } else {
+            // activeFacet id --> the filter id
             var subfilter = this.get(activeFacet.id);
             subfilter.set({
                 active: true,
@@ -33,7 +34,6 @@ Filters = Backbone.Collection.extend({
                 budget: this.aggregate(subfilter).budget,
                 expenditure: this.aggregate(subfilter).expenditure,
             });
-            debugger
         }
 
         this.trigger('update');

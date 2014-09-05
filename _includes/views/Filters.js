@@ -1,32 +1,37 @@
 views.Filters = Backbone.View.extend({
     initialize: function () {
-        this.collection.on('update', this.render, this);
+        // the element of this view is passed when filters
+        // are generated for their respective facet
+        // see Facets.js
+
+        // collection is the subfilters associated with a facet
+        this.listenTo(this.collection,'update',this.render);
+
+        // on generation of filters all entries are collapsed
+        this.$el.toggleClass('filtered', false);
     },
     render: function(keypress) {
+
         var view = this;
         setTimeout(function() {
-
             var filterModels = [],
                 chartModels = [],
-                active = view.collection.where({ active: true }),
+                active = view.collection.findWhere({ active: true }), // find the "filtered" collection
                 chartType = 'budget',
                 donor = '';
-                
-            $('#' + view.collection.id).toggleClass('filtered', false);
 
-            if (active.length) {
+            if (active) {
     
                 // Use donor level financial data if available
-                if (active[0].collection.id === 'donors') {
-                    donor = active[0].id;
+
+                if (active.collection.id === 'donors') {
+                    donor = active.id;
                     global.projects.mapView.collection.donorID = donor;
                 }
                 // Add a filtered class to all parent containers
                 // where an active element has been selected.
-                _(active).each(function(a) {
-                    $('#' + a.collection.id).toggleClass('filtered', true);
-                });
-    
+                $('#' + active.collection.id).toggleClass('filtered', true);
+
                 // copy the collection twice for different usage
                 filterModels = active;
                 chartModels = active;
@@ -36,8 +41,8 @@ views.Filters = Backbone.View.extend({
                 view.collection.sort();
                 
                 if (view.collection.id === 'donors') {
-                    var donorCountry = _(global.processedFacets).where({ facet: 'donor_countries' });
-                    donorCountry = (donorCountry.length) ? donorCountry[0].id : false;
+                    var donorCountry = _(global.processedFacets).findWhere({ facet: 'donor_countries' });
+                    donorCountry = (donorCountry) ? donorCountry.id : false;
                 }
 
                 setTimeout(function() {

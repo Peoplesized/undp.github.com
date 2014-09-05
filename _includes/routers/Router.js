@@ -62,6 +62,7 @@ routers.Global = Backbone.Router.extend({
             } else if (selectedFacets[0] === 'donor_countries'){
                 donor = selectedFacets[1]
             }
+
             return {
                 facet: selectedFacets[0],
                 id: selectedFacets[1]
