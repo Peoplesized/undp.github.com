@@ -1,6 +1,7 @@
 views.Map = Backbone.View.extend({
     el: '#homemap',
     initialize: function() {
+        this.collection = global.projects;
         this.nations = new Nationals();
         this.nations.fetch();
         if (this.options.render) this.render();
