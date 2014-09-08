@@ -9,11 +9,6 @@ views.Facets = Backbone.View.extend({
 	render:function(){
 		var facetHTML = '';
 
-		// a global object to host one view for each facet
-		// in their respective element
-		// this can be cleaned up
-		global.allFacetViews = {}
-
 		this.collection.each(function(facet){
 
 			facetHTML += this.template({
@@ -28,31 +23,15 @@ views.Facets = Backbone.View.extend({
 	        facet.subFilters.name = facet.get('name');
 	        facet.subFilters.url = facet.get('url');
 
-	        // new views.Filters({
-	        // 	el:'#' + facet.id,
-	        // 	collection: facet.subFilters
-	        // })
-
 			facet.subFilters.fetch({
 				success: function () {
-				// global.allFacetViews[facet.id] = new views.Filters({ // views.Filters is being reused
-				// 	el: '#' + facet.id, // element name is created based on the facet name
-				// 	collection: facet.subFilters
-				// });
 
-				// search in processedFacets if current facet is selected
-				// if (global.processedFacets.indexOf(facet.id) > -1) {
-				// 	// if so, the facet is "active"
-				// 	global.allFacetViews[facet.id].active = true
-				// }
+			        new views.Filters({
+						el:'#' + facet.id,
+						collection: facet.subFilters
+			        });
 
-
-		        new views.Filters({
-					el:'#' + facet.id,
-					collection: facet.subFilters
-		        })
-				facet.subFilters.watch();
-
+					facet.subFilters.watch();
 				}
 			});
 
