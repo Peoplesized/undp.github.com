@@ -29,7 +29,8 @@ views.Filters = Backbone.View.extend({
             $('#' + this.collection.id + '-' + model.id).toggleClass('active', model.get('active'));
         },this);
 
-        if (!keypress) global.projects.mapView.render();
+        // TODO temporary disable map loading - map conatiner init problem
+        // if (!keypress) global.projects.mapView.render();
         this.renderCharts();
 },
 renderCharts: function(){
