@@ -51,7 +51,7 @@ Here's the general directory layout:
 
 ## Managing content
 
-Content may be managed by checking out and editing the repository locally, editing directly on GitHub, or through [Prose](http://prose.io/about.html), a web-based editor for GitHub.
+Content may be managed by checking out and editing the repository locally, editing directly on GitHub, or through [Prose](http://prose.io/#about), a web-based editor for GitHub.
 
 ## Editing Copy
 
